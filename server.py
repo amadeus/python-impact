@@ -1,24 +1,32 @@
 import BaseHTTPServer
-import json
-import os.path
-import mimetypes
-import urlparse
-import glob
-import os
 import cgi
+import glob
+import json
+import mimetypes
+import os
+import os.path
+import urlparse
 
-# Listening port
-PORT = 7777
+# Various config settings for the python server
+SETTINGS = {
+    "port":        8080,
+    "logging":     False,
+
+    "api-save":    "/lib/weltmeister/api/save.php",
+    "api-browse":  "/lib/weltmeister/api/browse.php",
+    "api-glob":    "/lib/weltmeister/api/glob.php",
+
+    "image-types": [".png", ".jpg", ".gif", ".jpeg"]
+}
 
 # Get the current directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR[-1] != "/":
     BASE_DIR += "/"
 
-# Blank GIF
-FAVICON_GIF = 'GIF89a\x01\x00\x01\x00\xf0\x00\x00\xff\xff\xff\x00\x00\x00!\xff\x0bXMP DataXMP\x02?x\x00!\xf9\x04\x05\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00@\x02\x02D\x01\x00;'
+# Blank favicon - prevents silly 404s from occuring if no favicon is supplied
+FAVICON_GIF = "GIF89a\x01\x00\x01\x00\xf0\x00\x00\xff\xff\xff\x00\x00\x00!\xff\x0bXMP DataXMP\x02?x\x00!\xf9\x04\x05\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00@\x02\x02D\x01\x00;"
 
-IMG_EXT = [".png", ".jpg", ".gif", ".jpeg"]
 
 
 class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -45,8 +53,9 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write(mesg)
 
     def log_request(self, *args, **kwargs):
-        "Override to disable"
-        return
+        "If logging is disabled "
+        if SETTINGS['logging']:
+            BaseHTTPServer.BaseHTTPRequestHandler.log_request(self, *args, **kwargs)
 
     def init_request(self):
         parts = self.path.split("?", 1)
@@ -66,21 +75,21 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.init_request()
 
         # From http://stackoverflow.com/questions/4233218/python-basehttprequesthandler-post-variables
-        ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-        if ctype == 'multipart/form-data':
+        ctype, pdict = cgi.parse_header(self.headers.getheader("content-type"))
+        if ctype == "multipart/form-data":
             self.post_params = cgi.parse_multipart(self.rfile, pdict)
-        elif ctype == 'application/x-www-form-urlencoded':
-            length = int(self.headers.getheader('content-length'))
+        elif ctype == "application/x-www-form-urlencoded":
+            length = int(self.headers.getheader("content-length"))
             self.post_params = cgi.parse_qs(self.rfile.read(length), keep_blank_values=1)
 
         self.route_request("POST")
 
     def route_request(self, method="GET"):
-        if self.file_path == "/lib/weltmeister/api/save.php":
+        if self.file_path == SETTINGS["api-save"]:
             self.save()
-        elif self.file_path == "/lib/weltmeister/api/browse.php":
+        elif self.file_path == SETTINGS["api-browse"]:
             self.browse()
-        elif self.file_path == "/lib/weltmeister/api/glob.php":
+        elif self.file_path == SETTINGS["api-glob"]:
             self.glob()
         elif method == "GET":
             self.serve_file()
@@ -126,7 +135,7 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         if "type" in self.query_params:
             types = self.query_params["type"]
             if "images" in types:
-                files = [f for f in files if os.path.splitext(f)[1] in IMG_EXT]
+                files = [f for f in files if os.path.splitext(f)[1] in SETTINGS["image-types"]]
             elif "scripts" in types:
                 files = [f for f in files if os.path.splitext(f)[1] == ".js"]
 
@@ -180,9 +189,9 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
 def main():
-    addr = ('', PORT)
+    addr = ("", SETTINGS["port"])
     server = BaseHTTPServer.HTTPServer(addr, HTTPHandler)
-    print "Running ImpactJS on localhost:%d" % addr[1]
+    print "Running ImpactJS Server on http://localhost:%d" % addr[1]
     server.serve_forever()
 
 if __name__ == "__main__":
