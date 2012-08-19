@@ -44,10 +44,14 @@ Defaults to False, if set to True, you will see http request logs in terminal.
 
 ### API-*
 
-This allows you to configure the API endpoints hit by weltmeister. Only change these if you changed them in the weltmeister config file.
+This allows you to configure the API endpoints hit by weltmeister. Only change these if you changed them in the weltmeister config.js file.
 
 If you have no idea what I am talking about don't touch them.
 
 ### Image-Types
 
 Don't touch this unless you know what you are doing. It determines what images can be displayed and used in Weltmeister.
+
+### MimeTypes
+
+This is a dictionary used to add your own custom mime-types. You only need to use this if you are noticing certain file types not being served properly.
