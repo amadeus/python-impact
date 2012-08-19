@@ -16,7 +16,11 @@ SETTINGS = {
     "api-browse":  "/lib/weltmeister/api/browse.php",
     "api-glob":    "/lib/weltmeister/api/glob.php",
 
-    "image-types": [".png", ".jpg", ".gif", ".jpeg"]
+    "image-types": [".png", ".jpg", ".gif", ".jpeg"],
+
+    "mimetypes": {
+        "ogg": "audio/ogg"
+    }
 }
 
 # Get the current directory
@@ -26,8 +30,6 @@ if BASE_DIR[-1] != "/":
 
 # Blank favicon - prevents silly 404s from occuring if no favicon is supplied
 FAVICON_GIF = "GIF89a\x01\x00\x01\x00\xf0\x00\x00\xff\xff\xff\x00\x00\x00!\xff\x0bXMP DataXMP\x02?x\x00!\xf9\x04\x05\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00@\x02\x02D\x01\x00;"
-
-
 
 class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
@@ -139,6 +141,9 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             elif "scripts" in types:
                 files = [f for f in files if os.path.splitext(f)[1] == ".js"]
 
+        files = [f.replace('\\', '/') for f in files]
+        dirs = [d.replace('\\', '/') for d in dirs]
+
         response = {
             "files": files,
             "dirs": dirs,
@@ -155,7 +160,18 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             more = glob.glob(g)
             files.extend(more)
 
+        files = [f.replace('\\', '/') for f in files]
         return self.send_json(files)
+
+    def guess_type(self, path):
+        type, _ = mimetypes.guess_type(path)
+
+        if not type:
+            ext = path.split('.')[-1]
+            if ext in SETTINGS["mimetypes"].keys():
+                type = SETTINGS["mimetypes"][ext]
+
+        return type
 
     def serve_file(self):
         path = self.file_path
@@ -175,8 +191,8 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         path = os.path.join(BASE_DIR, path)
 
         try:
-            data = open(path).read()
-            type, _ = mimetypes.guess_type(path)
+            data = open(path, "rb").read()
+            type = self.guess_type(path)
             self.send_response(data, 200, headers={"Content-Type": type})
         except:
             if "/favicon.ico" in path:
@@ -185,7 +201,7 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 self.send_response("", 404)
 
     def barf(self):
-        self.send_response("Fuck yourself", 405)
+        self.send_response("barf", 405)
 
 
 def main():
