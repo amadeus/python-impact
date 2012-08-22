@@ -174,6 +174,10 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             if ext in SETTINGS['mimetypes'].keys():
                 type = SETTINGS['mimetypes'][ext]
 
+        # Winblows hack
+        if os.name == "nt" and type.startswith("image"):
+            type = type.replace("x-", "")
+          
         return type
 
     def serve_file(self):
