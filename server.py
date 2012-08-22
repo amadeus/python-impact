@@ -141,8 +141,9 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             elif 'scripts' in types:
                 files = [f for f in files if os.path.splitext(f)[1] == '.js']
 
-        files = [f.replace('\\', '/') for f in files]
-        dirs = [d.replace('\\', '/') for d in dirs]
+        if os.name == 'nt':
+            files = [f.replace('\\', '/') for f in files]
+            dirs = [d.replace('\\', '/') for d in dirs]
 
         response = {
             'files': files,
@@ -160,7 +161,9 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             more = glob.glob(g)
             files.extend(more)
 
-        files = [f.replace('\\', '/') for f in files]
+        if os.name == 'nt':
+            files = [f.replace('\\', '/') for f in files]
+
         return self.send_json(files)
 
     def guess_type(self, path):
