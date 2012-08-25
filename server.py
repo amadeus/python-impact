@@ -177,7 +177,7 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         # Winblows hack
         if os.name == "nt" and type.startswith("image"):
             type = type.replace("x-", "")
-          
+
         return type
 
     def serve_file(self):
@@ -214,7 +214,7 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 def main():
     addr = ('', SETTINGS['port'])
     server = BaseHTTPServer.HTTPServer(addr, HTTPHandler)
-    print 'Running ImpactJS Server on http://localhost:%d' % addr[1]
+    print 'Running ImpactJS Server\nGame:   http://localhost:%d\nEditor: http://localhost:%d/editor' % (addr[1], addr[1])
     server.serve_forever()
 
 if __name__ == '__main__':
