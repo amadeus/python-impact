@@ -23,6 +23,10 @@ SETTINGS = {
     }
 }
 
+# Override port if we are on a Heroku server
+if os.environ.get('PORT'):
+    SETTINGS['port'] = int(os.environ.get('PORT'))
+
 # Get the current directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR[-1] != '/':
