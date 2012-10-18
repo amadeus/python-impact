@@ -13,6 +13,8 @@ Then in terminal simply run:
 
 Visit http://localhost:8080 for the game or http://localhost:8080/editor for the weltmeister level editor.
 
+If you'd like to use this on Heroku, simply include `Procfile` and `requirements.txt` in your git project.
+
 
 ## Why did you build this and why is it useful?
 
