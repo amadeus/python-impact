@@ -128,13 +128,16 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def browse(self):
         # Get the directory to scan
-        dir = self.query_params['dir'][0] if 'dir' in self.query_params else '.'
-        dir = dir.replace('..', '')
-        if dir[-1] != '/':
-            dir += '/'
+        dir = ''
+        if 'dir' in self.query_params:
+            dir = self.query_params['dir'][0].replace('..', '')
+            if dir[-1] != '/':
+                dir += '/'
 
         # Get the dir and files
-        dirs = [d for d in os.listdir(os.path.join(BASE_DIR, dir)) if '.' not in d]
+        dirs = [os.path.join(dir, d) for d in os.listdir(os.path.join(BASE_DIR, dir))
+                if os.path.isdir(os.path.join(dir, d))]
+
         files = glob.glob(dir + '*.*')
 
         # Filter on file types
