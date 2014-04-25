@@ -22,7 +22,7 @@ I have a strange aversion to anything PHP and trying to develop with multiple Im
 
 With this server all you need to do is change the settings port and you could even run many servers simultaneously.
 
-Oh and technically I didn't build it, I forced a super talented friend of mine [Armon](http://github.com/armon) to hack this together for me.
+Oh and technically I didn't build it, I tortured a super newb friend of mine [Armon](http://github.com/armon) to hack this together for me.
 
 
 ## Caveats
