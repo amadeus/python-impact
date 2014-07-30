@@ -9,7 +9,7 @@ Just drop server.py in your impact folder along with your index.html file.
 
 Then in terminal simply run:
 
-	python server.py
+    ./server.py
 
 Visit http://localhost:8080 for the game or http://localhost:8080/editor for the weltmeister level editor.
 
