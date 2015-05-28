@@ -79,6 +79,10 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.init_request()
         self.route_request('GET')
 
+    def do_HEAD(self):
+        self.init_request()
+        self.send_response('')
+
     def do_POST(self):
         self.init_request()
 
