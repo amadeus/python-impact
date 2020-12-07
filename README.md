@@ -1,5 +1,7 @@
 # Python Impact Web Server
 
+**THIS PROJECT IS NO LONGER MAINTAINED. I WON'T BE ABLE TO FIX ANY ISSUES YOU MIGHT HAVE**
+
 A simple self contained web server for ImpactJS that allows you to run both the game and weltmeister (level editor) without the need for Apache.
 
 
